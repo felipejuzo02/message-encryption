@@ -87,7 +87,8 @@ export default {
         .then(() => {
           this.$q.notify({
             message: 'Texto copiado com sucesso!',
-            type: 'positive'
+            type: 'positive',
+            color: 'primary'
           })
         })
         .catch(() => {
@@ -121,17 +122,16 @@ export default {
       let encryptArray = []
 
       asciiCode.forEach(original => {
-        const originalText = BigInt(original)
-        const textE = BigInt(valueE)
+        const originalValue = BigInt(original)
+        const bigValueE = BigInt(valueE)
+        const charEncrypt = (originalValue ** bigValueE) % BigInt(valueN)
 
-        const teste = (originalText ** textE) % BigInt(valueN)
-
-        encryptArray.push(String.fromCharCode(parseFloat(teste)))
+        encryptArray.push(String.fromCharCode(parseFloat(charEncrypt)))
       })
 
 
       this.clearFields()
-      encryptArray.forEach(teste => this.encryptText += teste.toString() )
+      encryptArray.forEach(el => this.encryptText += el.toString() )
     },
 
     setNormalText () {
@@ -154,19 +154,18 @@ export default {
 
       text.forEach(number => asciiCode.push(number.charCodeAt()))
 
-      let cornoDoLeo = []
+      let normalTextArray = []
 
       asciiCode.forEach(decimal => {
-        const decimalText = BigInt(decimal)
-        const textD = BigInt(valueD)
+        const decimalValue = BigInt(decimal)
+        const bigValueD = BigInt(valueD)
+        const charNormalText = (decimalValue ** bigValueD) % BigInt(valueN)
 
-        const teste = (decimalText ** textD) % BigInt(valueN)
-
-        cornoDoLeo.push(String.fromCharCode(parseFloat(teste)))
+        normalTextArray.push(String.fromCharCode(parseFloat(charNormalText)))
       })
 
       this.clearFields()
-      cornoDoLeo.forEach(teste => this.normalText += teste.toString() )
+      normalTextArray.forEach(el => this.normalText += el.toString() )
 
     },
 
@@ -193,7 +192,7 @@ export default {
 
   &__main-button {
     position: absolute;
-    bottom: -40px;
+    bottom: -45px;
     left: 50%;
     transform: translateX(-50%);
   }

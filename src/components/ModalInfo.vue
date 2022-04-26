@@ -7,7 +7,11 @@
           <p>- Defina dois valores primos, um valor P e outro valor Q</p>
           <p>- Defina um número D que tenha a propriedade de ser primo em relação à Z (Z = (P - 1) * (Q - 1))</p>
           <p>- Agora clique em executar e digite seu texto</p>
+          <p>- Agora clique em executar</p>
+          <p>- Digite seu texto (Normal ou encriptado)</p>
+          <p>- Clique em Encriptar/Desencriptar</p>
           <p>- Você pode realizar a inversão caso necessário</p>
+          <p>- Caso queira você pode copiar o texto, tanto normal quanto encriptado</p>
         </div>
       </q-card-section>
 
