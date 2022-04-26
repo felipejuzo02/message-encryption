@@ -7,24 +7,24 @@
 
     <div class="container relative-position">
       <div class="flex justify-between q-pb-lg">
-        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueP" label="Valor P" type="number">
+        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueP" label="Valor P" type="number" :error="!validNumbers.isValidP" :error-message="errorMessage">
           <template v-slot:prepend>
             <q-icon name="confirmation_number" color="white" />
           </template>
         </q-input>
-        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueQ" label="Valor Q" type="number">
+        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueQ" label="Valor Q" type="number" :error="!validNumbers.isValidQ" :error-message="errorMessage">
           <template v-slot:prepend>
             <q-icon name="confirmation_number" color="white" />
           </template>
         </q-input>
-        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueD" label="Valor D" type="number">
+        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueD" label="Valor D" type="number" :error="!validNumbers.isValidD" :error-message="errorMessage">
           <template v-slot:prepend>
             <q-icon name="confirmation_number" color="white" />
           </template>
         </q-input>
       </div>
       <div class="full-width text-center q-mt-xl">
-        <q-btn :disable="hasAllValues" class="q-px-xl" color="secondary" text-color="white" label="Executar" @click="openEncryptionModal" />
+        <q-btn :disable="isValidRequest" class="q-px-xl" color="secondary" text-color="white" label="Executar" @click="openEncryptionModal" />
       </div>
     </div>
 
@@ -45,9 +45,14 @@ export default {
       infoModal: false,
       encryptionModal: false,
       values: {
-        valueP: 17,
-        valueQ: 11,
-        valueD: 7
+        valueP: 0,
+        valueQ: 0,
+        valueD: 0
+      },
+      validNumbers: {
+        isValidP: true,
+        isValidQ: true,
+        isValidD: true,
       }
     }
   },
@@ -57,15 +62,53 @@ export default {
     EncryptionModal
   },
 
-  computed: {
-    hasAllValues () {
-      let hasValues = false
+  watch: {
+    'values.valueP' () {
+      for (let i = 2; i < this.values.valueP; i++) {
+        if (this.values.valueP % i === 0) {
+          return this.validNumbers.isValidP = false;
+        }
+      }
 
-      Object.values(this.values).forEach((el) => {
-        hasValues = !el
+      return this.validNumbers.isValidP = true;
+    },
+
+    'values.valueQ' () {
+      for (let i = 2; i < this.values.valueQ; i++) {
+        if (this.values.valueQ % i === 0) {
+          return this.validNumbers.isValidQ = false;
+        }
+      }
+
+      return this.validNumbers.isValidQ = true;
+    },
+
+    'values.valueD' () {
+      for (let i = 2; i < this.values.valueD; i++) {
+        if (this.values.valueD % i === 0) {
+          return this.validNumbers.isValidD = false;
+        }
+      }
+
+      return this.validNumbers.isValidD = true;
+    }
+  },
+
+  computed: {
+    isValidRequest () {
+      let hasValues = false
+      let isValidNumbers = true
+
+      Object.values(this.values).forEach((el) => hasValues = !el)
+      Object.values(this.validNumbers).forEach((el) => {
+        if(!el) isValidNumbers = false
       })
 
-      return hasValues
+      return hasValues || !isValidNumbers
+    },
+
+    errorMessage () {
+      return 'Valor deve ser primo!'
     }
   },
 
