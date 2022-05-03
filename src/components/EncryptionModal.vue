@@ -41,7 +41,7 @@
       </q-card-section>
 
       <q-card-actions align="right" class="bg-white text-teal">
-        <q-btn flat label="Fechar" v-close-popup />
+        <q-btn flat label="Fechar" v-close-popup @click="clearAllFields" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -110,7 +110,7 @@ export default {
       this.othersValues.valueN = valueP * valueQ
       this.othersValues.valueZ = (valueP - 1) * (valueQ - 1)
 
-      for(let i = 0; i <= 1000; i++) {
+      for(let i = 0; i <= 1000000; i++) {
         if((i * valueD) % this.othersValues.valueZ === 1) {
           this.othersValues.valueE = i
           break;
@@ -129,7 +129,6 @@ export default {
         encryptArray.push(String.fromCharCode(parseFloat(charEncrypt)))
       })
 
-
       this.clearFields()
       encryptArray.forEach(el => this.encryptText += el.toString() )
     },
@@ -143,7 +142,7 @@ export default {
       this.othersValues.valueN = valueP * valueQ
       this.othersValues.valueZ = (valueP - 1) * (valueQ - 1)
 
-      for(let i = 0; i <= 1000; i++) {
+      for(let i = 0; i <= 1000000; i++) {
         if((i * valueD) % this.othersValues.valueZ === 1) {
           this.othersValues.valueE = i
           break;
@@ -166,7 +165,6 @@ export default {
 
       this.clearFields()
       normalTextArray.forEach(el => this.normalText += el.toString() )
-
     },
 
     invertMode () {
@@ -175,6 +173,12 @@ export default {
 
     clearFields () {
       this.normalMode ? this.encryptText = '' : this.normalText = ''
+    },
+
+    clearAllFields () {
+      this.encryptText = ''
+      this.normalText = ''
+      this.normalMode = true
     }
   }
 }
