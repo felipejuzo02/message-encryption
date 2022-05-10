@@ -7,24 +7,25 @@
 
     <div class="container relative-position">
       <div class="flex justify-between q-pb-lg">
-        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueP" label="Valor P" type="number" :error="!validNumbers.isValidP" :error-message="errorMessage">
+        <q-input class="home-page__input" disable color="primary" label-color="white" filled v-model="values.valueP" label="Valor P" type="number">
           <template v-slot:prepend>
             <q-icon name="confirmation_number" color="white" />
           </template>
         </q-input>
-        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueQ" label="Valor Q" type="number" :error="!validNumbers.isValidQ" :error-message="errorMessage">
+        <q-input class="home-page__input" disable color="primary" label-color="white" filled v-model="values.valueQ" label="Valor Q" type="number" >
           <template v-slot:prepend>
             <q-icon name="confirmation_number" color="white" />
           </template>
         </q-input>
-        <q-input class="home-page__input" color="primary" label-color="white" filled v-model="values.valueD" label="Valor D" type="number" :error="!validNumbers.isValidD" :error-message="errorMessage">
+        <q-input class="home-page__input" disable color="primary" label-color="white" filled v-model="values.valueD" label="Valor D" type="number" >
           <template v-slot:prepend>
             <q-icon name="confirmation_number" color="white" />
           </template>
         </q-input>
       </div>
-      <div class="full-width text-center q-mt-xl">
-        <q-btn :disable="isValidRequest" class="q-px-xl" color="secondary" text-color="white" label="Executar" @click="openEncryptionModal" />
+      <div class="text-center home-page__container-buttons column q-mt-xl">
+        <q-btn class="q-px-xl q-mb-md" color="primary" outline  label="Gerar novamente" @click="setValues" />
+        <q-btn class="q-px-xl" color="secondary" text-color="white" label="Executar" @click="openEncryptionModal" />
       </div>
     </div>
 
@@ -39,6 +40,8 @@
 import ModalInfo from '../components/ModalInfo.vue'
 import EncryptionModal from '../components/EncryptionModal.vue'
 
+const primeNumber = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73 , 79, 83, 89, 97];
+
 export default {
   data() {
     return {
@@ -48,11 +51,6 @@ export default {
         valueP: 0,
         valueQ: 0,
         valueD: 0
-      },
-      validNumbers: {
-        isValidP: true,
-        isValidQ: true,
-        isValidD: true,
       }
     }
   },
@@ -62,54 +60,8 @@ export default {
     EncryptionModal
   },
 
-  watch: {
-    'values.valueP' () {
-      for (let i = 2; i < this.values.valueP; i++) {
-        if (this.values.valueP % i === 0) {
-          return this.validNumbers.isValidP = false;
-        }
-      }
-
-      return this.validNumbers.isValidP = true;
-    },
-
-    'values.valueQ' () {
-      for (let i = 2; i < this.values.valueQ; i++) {
-        if (this.values.valueQ % i === 0) {
-          return this.validNumbers.isValidQ = false;
-        }
-      }
-
-      return this.validNumbers.isValidQ = true;
-    },
-
-    'values.valueD' () {
-      for (let i = 2; i < this.values.valueD; i++) {
-        if (this.values.valueD % i === 0) {
-          return this.validNumbers.isValidD = false;
-        }
-      }
-
-      return this.validNumbers.isValidD = true;
-    }
-  },
-
-  computed: {
-    isValidRequest () {
-      let hasValues = false
-      let isValidNumbers = true
-
-      Object.values(this.values).forEach((el) => hasValues = !el)
-      Object.values(this.validNumbers).forEach((el) => {
-        if(!el) isValidNumbers = false
-      })
-
-      return hasValues || !isValidNumbers
-    },
-
-    errorMessage () {
-      return 'Valor deve ser primo!'
-    }
+  created () {
+    this.setValues()
   },
 
   methods: {
@@ -119,7 +71,58 @@ export default {
 
     openEncryptionModal () {
       this.encryptionModal = true
+    },
+
+    generateRandomValue () {
+      const position = Math.floor(Math.random() * (primeNumber.length - 4)) + 4
+
+      return primeNumber[position]
+    },
+
+    generateLimitedValue () {
+      const position = Math.floor(Math.random() * (8))
+
+      return primeNumber[position]
+    },
+
+    calculateMDC (num1, num2) {
+      let resto;
+
+      do {
+          resto = num1 % num2;
+
+          num1 = num2;
+          num2 = resto;
+
+      } while (resto != 0);
+
+      return num1;
+    },
+
+    setValues () {
+      this.values.valueP = this.generateRandomValue()
+      this.values.valueQ = this.generateRandomValue()
+
+      do {
+        this.values.valueQ = this.generateRandomValue()
+      } while(this.values.valueP === this.values.valueQ)
+
+      const num1 = (this.values.valueP - 1) * (this.values.valueQ - 1)
+
+      let controller = true
+      do {
+        const num2 = this.generateLimitedValue()
+        const mdc = this.calculateMDC(num1, num2)
+
+        if(mdc === 1) {
+          if(num1 > num2) {
+            controller = false
+            this.values.valueD = num2
+          }
+        }
+      } while (controller)
     }
+    
   }
 }
 </script>
@@ -140,6 +143,11 @@ export default {
 
   &__input input {
     color: $white;
+  }
+
+  &__container-buttons {
+    max-width: 280px;
+    margin: 0 auto;
   }
 
   &__information-button {
